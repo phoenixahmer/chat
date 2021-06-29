@@ -1,6 +1,5 @@
 import { ADD_PUBLIC_CHAT_REQUEST, ADD_PUBLIC_CHAT_SUCCESS, ADD_PUBLIC_CHAT_ERROR } from "../type/publicChatType"
 import { client } from "../../websocket"
-import { chatSuccess } from "./chatAction"
 
 export const addPublicChatRequest = () => {
   return {
@@ -29,14 +28,6 @@ export const addChat = (chat, newMessage) => {
         message: newMessage,
         token: localStorage.token
       }))
-      client.onmessage = (message) => {
-        const res = JSON.parse(message.data)
-        dispatch(addPublicChatSuccess(res))
-
-        const updatedChat = [...chat, res]
-        console.log(updatedChat)
-        dispatch(chatSuccess(updatedChat))
-      }
 
     } catch (error) {
       dispatch(addPublicChatError(error.message))

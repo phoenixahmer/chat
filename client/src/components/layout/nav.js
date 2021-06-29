@@ -14,18 +14,18 @@ export default function Nav() {
   }
   if (loggedIn === true)
     return (
-      <div>
-        <Link to="/user">user</Link>
-        {" "}
-        <Link to="/chat">chat</Link>
-        {" "}
-        <Link to="/" onClick={() => { logout() }}>logout</Link>
+      <div className="nav">
+        <Link className="nav-link" to="/user">user</Link>
+        <Link className="nav-link" to="/chat">chat</Link>
+        <Link className="nav-link" to="/group chat">group chat</Link>
+        <Link className="nav-link" to="/" onClick={() => { logout() }}>logout</Link>
       </div>
     )
   else
     return (
-      <div>
-        <Link to="/login">Login</Link>
+      <div className="nav">
+        <Link className="nav-link" to="/login">Login</Link>
+        <Link className="nav-link" to="/signup">signup</Link>
       </div>
     )
 }

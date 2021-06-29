@@ -2,7 +2,8 @@ const mongoose = require("mongoose")
 
 const PublicChatSchema = mongoose.Schema({
   from: {
-    type: mongoose.Schema.Types.ObjectId
+    type: mongoose.Schema.Types.ObjectId,
+    require: true
   },
   message: {
     type: String,

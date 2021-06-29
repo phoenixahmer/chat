@@ -4,24 +4,50 @@ const secret = require("config").secret
 
 const getUsers = async (req, res) => {
   try {
-    let users = await User.findById(req.user.id).select("-password")
-    res.send(users)
+    let user = await User.findById(req.user.id).select("-password")
+    if (!user) {
+      return res.status(404).json({ message: "user not found" })
+    }
+    res.send(user)
+
   } catch (error) {
     res.send(error.message)
+    console.log(error)
   }
 }
 
 const addUser = async (req, res) => {
-  let users = new User({
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password
-  })
-
   try {
+    const { name, email, password } = req.body
+
+    let user = await User.findOne({ email })
+    if (user) {
+      console.log({ message: "user already exist" })
+      return res.status(409).json({ message: "user already exist" })
+    }
+
+    user = await User.findById(req.user.id).select("-password")
+
+    users = new User({ name, email, password })
     await users.save()
-    res.send(users)
+
+    const payload = {
+      user: {
+        id: users.id
+      }
+    }
+    jwt.sign(
+      payload,
+      secret,
+      { expiresIn: '1day' },
+      (err, token) => {
+        if (err) throw err;
+        return res.json({ token });
+      }
+    )
+
   } catch (error) {
+    console.log(error)
     res.send(error.message)
   }
 }
@@ -30,14 +56,15 @@ const loginUser = async (req, res) => {
   const { email, password } = req.body
   try {
     let user = await User.findOne({ email })
-    if (!user) return res.status(404).json({ message: "user not found" })
-    if (user.password !== password) return res.send("password doesn't match")
-
+    if (!user) return res.status(404).json({ message: "wrong credentials" })
+    if (user.password !== password) res.status(404).json({ message: "wrong credentials" })
+    console.log(user)
     const payload = {
       user: {
         id: user.id
       }
     }
+    console.log(user)
     jwt.sign(
       payload,
       secret,

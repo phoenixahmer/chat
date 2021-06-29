@@ -1,18 +1,6 @@
 const PublicChat = require("../model/PublicChat")
-
-const addPublicChat = async (req, res) => {
-  try {
-    const message = req.body.message
-    const from = req.user.id
-
-    const chat = new PublicChat({ from, message })
-    await chat.save()
-
-    return res.status(200).json(chat)
-  } catch (error) {
-    console.log(error)
-  }
-}
+const GroupChatList = require("../model/GroupChatList")
+const User = require("../model/User")
 
 const getPublicChats = async (req, res) => {
   try {
@@ -28,12 +16,47 @@ const getPublicChats = async (req, res) => {
   }
 }
 
-exports.addPublicChat = addPublicChat
+const addToGroupChatList = async (req, res) => {
+  try {
+    let user = await User.findById(req.user.id)
+
+    let groupChatList = new GroupChatList({
+      greatedBy: req.user.id,
+      name: req.body.name,
+      members: [{
+        id: user.id,
+        email: user.email,
+        role: "admin"
+      }]
+    })
+
+    groupChatList = await groupChatList.save()
+    return res.status(200).json(groupChatList)
+
+  } catch (error) {
+    console.log(error.message)
+    return res.status(400).json({ message: error.message })
+  }
+}
+
+const getGroupChatList = async (req, res) => {
+
+
+  try {
+    let groupChatList = await GroupChatList.find()
+
+    if (!groupChatList) {
+      console.log({ message: "group not found" })
+      return res.status(406).json({ message: "group not found" })
+    }
+
+    return res.status(200).json(groupChatList)
+  } catch (error) {
+    console.log(error.message)
+    return res.status(400).json({ message: error.message })
+  }
+}
+
 exports.getPublicChats = getPublicChats
-
-
-// {
-//   "to": "60c9a8629c026530b835f760",
-//   "from": "60c9aaee0c39172698214c40",
-//   "message": "testing"
-// }
+exports.addToGroupChatList = addToGroupChatList
+exports.getGroupChatList = getGroupChatList

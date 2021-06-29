@@ -2,6 +2,7 @@ import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 import Nav from './components/layout/nav';
 import Routes from "./components/Routes"
+import "./scss/index.scss"
 
 
 export default function App() {

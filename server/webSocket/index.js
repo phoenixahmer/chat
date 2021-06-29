@@ -21,16 +21,21 @@ const webSocket = (server, path) => {
         jwt.verify(res.token,
           secret,
           async (err, decoded) => {
-            if (err) throw err
+            if (err) {
+              console.log(err.message)
+              ws.send(JSON.stringify({ message: "message not sent" }))
+            }
+            else {
 
-            const from = decoded.user.id
-            const message = res.message
+              const from = decoded.user.id
+              const message = res.message
 
-            const chat = new PublicChat({ from, message })
-            const payload = await chat.save()
+              const chat = new PublicChat({ from, message })
+              const payload = await chat.save()
 
-            ws.send(JSON.stringify(payload))
-
+              // ws.send(JSON.stringify(payload))
+              wss.broadcast(JSON.stringify(payload))
+            }
           })
       }
 
@@ -38,6 +43,22 @@ const webSocket = (server, path) => {
 
     });
   });
+
+
+  wss.broadcast = function broadcast(msg) {
+    console.log(msg);
+    wss.clients.forEach(function each(client) {
+      client.send(msg);
+    });
+  };
+
+
 }
 
 module.exports = webSocket
+
+
+
+
+
+

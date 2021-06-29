@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { client } from "../websocket"
-import { addChat, getChat } from "../redux"
-
-client.onopen = () => { console.log('webSocket Client Connected') }
+import { addChat, getChat, chatSuccess } from "../redux"
 
 export default function Chat() {
 
@@ -13,11 +11,25 @@ export default function Chat() {
 
   const [newMessage, setNewMessage] = useState("")
 
-  const sendMessage = e => e.key === 'Enter' && dispatch(addChat(chat.chat, newMessage))
+  const sendMessage = e => {
+    if (e.key === 'Enter') {
+      dispatch(addChat(chat.chat, newMessage))
+      setNewMessage("")
+    }
+  }
 
   useEffect(() => {
+    client.onopen = () => { console.log('webSocket Client Connected') }
     dispatch(getChat())
   }, [dispatch])
+
+  useEffect(() => {
+    client.onmessage = (message) => {
+      const res = JSON.parse(message.data)
+      const updatedChat = [...chat.chat, res]
+      dispatch(chatSuccess(updatedChat))
+    }
+  }, [chat, dispatch])
 
   return (
     <div>

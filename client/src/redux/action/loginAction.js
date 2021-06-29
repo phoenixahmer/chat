@@ -32,10 +32,8 @@ export const loginUser = (formData) => {
       let res = await axios.post("http://localhost:8080/user/login", formData)
       localStorage.setItem("token", res.data.token)
       dispatch(loginSuccess())
-      console.log(res)
     } catch (error) {
-      console.log(error.message)
-      dispatch(loginError(error.message))
+      dispatch(loginError(error.response.data))
     }
   }
 }
