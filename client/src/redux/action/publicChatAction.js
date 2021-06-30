@@ -19,7 +19,7 @@ export const addPublicChatError = (error) => {
   }
 }
 
-export const addChat = (chat, newMessage) => {
+export const addChat = (newMessage) => {
   return async (dispatch) => {
     dispatch(addPublicChatRequest())
     try {

@@ -28,9 +28,11 @@ const addToGroupChatList = async (req, res) => {
         email: user.email,
         role: "admin"
       }]
+
     })
 
     groupChatList = await groupChatList.save()
+    console.log(groupChatList)
     return res.status(200).json(groupChatList)
 
   } catch (error) {

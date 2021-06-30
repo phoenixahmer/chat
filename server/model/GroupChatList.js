@@ -11,7 +11,7 @@ const GroupChatListSchema = mongoose.Schema({
   },
   members: [{
     id: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       required: true
     },
     email: {

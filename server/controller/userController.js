@@ -58,13 +58,11 @@ const loginUser = async (req, res) => {
     let user = await User.findOne({ email })
     if (!user) return res.status(404).json({ message: "wrong credentials" })
     if (user.password !== password) res.status(404).json({ message: "wrong credentials" })
-    console.log(user)
     const payload = {
       user: {
         id: user.id
       }
     }
-    console.log(user)
     jwt.sign(
       payload,
       secret,

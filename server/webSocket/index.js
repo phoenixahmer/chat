@@ -1,47 +1,86 @@
 const PublicChat = require("../model/PublicChat")
+const GroupChatList = require("../model/GroupChatList")
+const GroupChatMessages = require("../model/GroupChatMessages")
 const websocket = require('ws');
 const jwt = require("jsonwebtoken")
 const secret = require("config").secret
 
+const webSocket = (server) => {
 
-const webSocket = (server, path) => {
+  const wss = new websocket.Server({ server });
 
-  const wss = new websocket.Server({ server, path });
+  wss.on('connection', (ws, req) => {
 
-  wss.on('connection', ws => {
+    console.log(`WS connected open on ${req.url}`)
+    ws.on("close", () => console.log(`WS connected close on ${req.url}`));
 
-    console.log(`WS connected open`)
-    ws.on("close", () => console.log("WS connected close"));
+    if (req.url === "/chat") {
+      ws.on('message', req => {
+        req = (JSON.parse(req))
+        try {
+          jwt.verify(req.token,
+            secret,
+            async (err, decoded) => {
+              if (err) {
+                console.log(err.message)
+                ws.send(JSON.stringify({ message: "message not sent" }))
+              }
+              else {
+                const from = decoded.user.id
+                const message = req.message
 
+                const chat = new PublicChat({ from, message })
+                const payload = await chat.save()
 
-    ws.on('message', res => {
-      res = (JSON.parse(res))
+                wss.broadcast(JSON.stringify(payload))
+              }
+            })
+        }
+        catch (error) { console.log(error.message) }
+      });
+    }
 
-      try {
-        jwt.verify(res.token,
-          secret,
-          async (err, decoded) => {
-            if (err) {
-              console.log(err.message)
-              ws.send(JSON.stringify({ message: "message not sent" }))
-            }
-            else {
+    if (req.url === "/groupChat") {
+      console.log("message from group chat")
+      ws.on('message', req => {
+        req = (JSON.parse(req))
+        try {
+          console.log(req)
+          jwt.verify(req.token,
+            secret,
+            async (err, decoded) => {
+              if (err) {
+                console.log(err.message)
+                ws.send(JSON.stringify({ message: "message not sent" }))
+              }
+              else {
+                const { groupId, message } = req
+                const from = decoded.user.id
+                console.log("groupId ", groupId)
+                const groupChatList = await GroupChatList.findById(groupId)
+                const all = await GroupChatList.find()
+                console.log("all ", all)
+                if (!groupChatList) {
+                  return {}
+                }
 
-              const from = decoded.user.id
-              const message = res.message
+                console.log(groupChatList)
+                const members = groupChatList.members
 
-              const chat = new PublicChat({ from, message })
-              const payload = await chat.save()
+                members.map(async members => {
+                  if (members.id == from) {
+                    const groupChat = new GroupChatMessages({ groupId, from, message })
+                    const payload = await groupChat.save()
+                  }
+                })
 
-              // ws.send(JSON.stringify(payload))
-              wss.broadcast(JSON.stringify(payload))
-            }
-          })
-      }
-
-      catch (error) { console.log(error.message) }
-
-    });
+              }
+            })
+          ws.send(req)
+        }
+        catch (error) { console.log(error.message) }
+      })
+    }
   });
 
 
@@ -52,13 +91,6 @@ const webSocket = (server, path) => {
     });
   };
 
-
 }
 
 module.exports = webSocket
-
-
-
-
-
-
