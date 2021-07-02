@@ -27,6 +27,7 @@ export const getUser = () => {
         'Content-Type': 'application/json;charset=UTF-8',
         "x-auth": localStorage.getItem("token")
       }
+      console.log(headers)
       let res = await axios.get("http://localhost:8080/user/", { headers: headers })
       res.data === "jwt expired"
         ? dispatch(userError(res.data))

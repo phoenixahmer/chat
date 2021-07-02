@@ -23,7 +23,7 @@ export const addChat = (newMessage) => {
   return async (dispatch) => {
     dispatch(addPublicChatRequest())
     try {
-
+      console.log(newMessage)
       client.send(JSON.stringify({
         message: newMessage,
         token: localStorage.token

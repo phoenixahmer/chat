@@ -19,6 +19,7 @@ export default function Nav() {
         <Link className="nav-link" to="/chat">chat</Link>
         <Link className="nav-link" to="/group chat">group chat</Link>
         <Link className="nav-link" to="/" onClick={() => { logout() }}>logout</Link>
+        {/* <Link className="nav-link" to="/" onClick={() => { logout() }}>logout</Link> */}
       </div>
     )
   else

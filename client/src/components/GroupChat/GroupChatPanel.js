@@ -19,27 +19,30 @@ export default function GroupChatPanel() {
   }
 
   return (
-    <div>
-      <h5>panel</h5>
-      {chat.loading
-        ? "....."
-        : chat.chat.map && chat.chat.map(
-          (v, i) => <p key={i} className={v.from === user._id
-            ? "text-start"
-            : "text-end"}>
-            {v.message}</p>
-        )}
+    groupChat.activeGroup
+      ?
+      <div>
+        <h5>Group chat panel</h5>
+        {chat.loading
+          ? "....."
+          : chat.chat.map && chat.chat.map(
+            (v, i) => <p key={i} className={v.from === user._id
+              ? "text-start"
+              : "text-end"}>
+              {v.message}</p>
+          )}
 
-      < div className="form-group">
-        <input
-          type="text"
-          placeholder="message"
-          className="form-control"
-          value={message}
-          onKeyDownCapture={sendMessage}
-          onChange={(e) => { setMessage(e.target.value) }}
-        />
+        < div className="form-group">
+          <input
+            type="text"
+            placeholder="message"
+            className="form-control"
+            value={message}
+            onKeyDownCapture={sendMessage}
+            onChange={(e) => { setMessage(e.target.value) }}
+          />
+        </div>
       </div>
-    </div>
+      : <div><h5>first selet a group ...</h5></div>
   )
 }

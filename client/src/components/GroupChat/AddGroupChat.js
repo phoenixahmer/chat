@@ -7,14 +7,17 @@ export default function AddGroupChat() {
   const [groupName, setGroupName] = useState("")
   const groupChat = useSelector(state => state.groupChat)
   const dispatch = useDispatch()
+
   const addGroup = async (e) => {
     if (e.key === 'Enter') {
       dispatch(addGroupChat(groupName))
       setGroupName("")
     }
   }
+
   return (
-    <div>
+    groupChat.addGroupEnabled
+    && <div>
       <div className="form-group">
         <label>add new group</label>
         <input

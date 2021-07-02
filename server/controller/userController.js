@@ -69,10 +69,17 @@ const loginUser = async (req, res) => {
       { expiresIn: '1day' },
       (err, token) => {
         if (err) throw err;
-        return res.json({ token });
+        return res.json({
+          token,
+          user: {
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            date: user.date
+          }
+        });
       }
     )
-
   } catch (error) {
     res.send(error.message)
   }

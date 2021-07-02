@@ -41,7 +41,6 @@ const webSocket = (server) => {
     }
 
     if (req.url === "/groupChat") {
-      console.log("message from group chat")
       ws.on('message', req => {
         req = (JSON.parse(req))
         try {
@@ -56,15 +55,15 @@ const webSocket = (server) => {
               else {
                 const { groupId, message } = req
                 const from = decoded.user.id
-                console.log("groupId ", groupId)
+
                 const groupChatList = await GroupChatList.findById(groupId)
-                const all = await GroupChatList.find()
-                console.log("all ", all)
+
                 if (!groupChatList) {
+                  console.log({ message: "no such group exist" })
+                  ws.send(JSON.stringify({ message: "no such group exist" }))
                   return {}
                 }
 
-                console.log(groupChatList)
                 const members = groupChatList.members
 
                 members.map(async members => {
@@ -78,7 +77,10 @@ const webSocket = (server) => {
             })
           ws.send(req)
         }
-        catch (error) { console.log(error.message) }
+        catch (error) {
+          console.log({ message: "caught" })
+          console.log(error.message)
+        }
       })
     }
   });

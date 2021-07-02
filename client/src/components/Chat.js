@@ -13,7 +13,7 @@ export default function Chat() {
 
   const sendMessage = e => {
     if (e.key === 'Enter') {
-      dispatch(addChat(chat.chat, newMessage))
+      dispatch(addChat(newMessage))
       setNewMessage("")
     }
   }

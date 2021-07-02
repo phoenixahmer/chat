@@ -6,11 +6,16 @@ import {
   GROUP_LIST_SUCCESS,
   GROUP_LIST_ERROR,
 
+  ADD_GROUP_ENABLED,
   ADD_GROUP_REQUEST,
   ADD_GROUP_SUCCESS,
   ADD_GROUP_ERROR,
 
   SET_ACTIVE_GROUP,
+
+  GET_GROUP_MESSAGES_REQUEST,
+  GET_GROUP_MESSAGES_SUCCESS,
+  GET_GROUP_MESSAGES_ERROR,
 
   SEND_GROUP_MESSAGES_REQUEST,
   SEND_GROUP_MESSAGES_SUCCESS,
@@ -55,6 +60,12 @@ export const getGroupChatList = () => {
 }
 
 // adding group
+export const addGroupEnabled = (toggle) => {
+  return {
+    type: ADD_GROUP_ENABLED,
+    payload: toggle
+  }
+}
 export const addGroupRequest = () => {
   return {
     type: ADD_GROUP_REQUEST
@@ -103,16 +114,54 @@ export const setActiveGroup = (activeGroup) => {
   }
 }
 
+// getting group messages
+export const groupMessagesRequest = () => {
+  return {
+    type: GET_GROUP_MESSAGES_REQUEST
+  }
+}
+export const groupMessagesSuccess = (messages) => {
+  return {
+    type: GET_GROUP_MESSAGES_SUCCESS,
+    payload: messages
+  }
+}
+export const groupMessagesError = (error) => {
+  return {
+    type: GET_GROUP_MESSAGES_ERROR,
+    payload: error
+  }
+}
+
+export const getGroupMessages = (groupId) => {
+  return async (dispatch) => {
+    dispatch(groupMessagesRequest)
+    const headers = {
+      'Content-Type': 'application/json;charset=UTF-8',
+      "x-auth": localStorage.getItem("token")
+    }
+    const body = { groupId }
+    console.log(groupId)
+    try {
+      let res = await axios.get("http://localhost:8080/chat/groupChat", { headers }, body)
+      console.log(res)
+      dispatch(groupMessagesSuccess(res.data))
+    } catch (error) {
+      dispatch(groupMessagesError(error.response.data))
+    }
+
+  }
+}
+
 // sending group messages
 export const sendGroupMessagesRequest = () => {
   return {
     type: SEND_GROUP_MESSAGES_REQUEST
   }
 }
-export const sendGroupMessagesSuccess = (groupMessages) => {
+export const sendGroupMessagesSuccess = () => {
   return {
     type: SEND_GROUP_MESSAGES_SUCCESS,
-    payload: groupMessages
   }
 }
 export const sendGroupMessagesError = (error) => {

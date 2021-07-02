@@ -6,7 +6,6 @@ export default function User() {
 
   const dispatch = useDispatch()
   const user = useSelector(state => state.user)
-
   useEffect(() => {
     dispatch(getUser())
   }, [dispatch])

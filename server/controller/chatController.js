@@ -1,5 +1,6 @@
 const PublicChat = require("../model/PublicChat")
 const GroupChatList = require("../model/GroupChatList")
+const GroupChatMessages = require("../model/GroupChatMessages")
 const User = require("../model/User")
 
 const getPublicChats = async (req, res) => {
@@ -32,7 +33,6 @@ const addToGroupChatList = async (req, res) => {
     })
 
     groupChatList = await groupChatList.save()
-    console.log(groupChatList)
     return res.status(200).json(groupChatList)
 
   } catch (error) {
@@ -42,8 +42,6 @@ const addToGroupChatList = async (req, res) => {
 }
 
 const getGroupChatList = async (req, res) => {
-
-
   try {
     let groupChatList = await GroupChatList.find()
 
@@ -59,6 +57,27 @@ const getGroupChatList = async (req, res) => {
   }
 }
 
+const getGroupChat = async (req, res) => {
+  try {
+    const { groupId } = req.body
+    console.log("req.body ", req)
+    console.log("req.header ", req.header)
+    let groupChatMessages = await GroupChatMessages.find({ groupId })
+
+    console.log(groupChatMessages)
+    if (!groupChatMessages) {
+      console.log({ message: "getGroupChat no groupChatMessages " })
+      return res.status(406).json({ message: "group not found" })
+    }
+
+    return res.status(200).json(groupChatMessages)
+  } catch (error) {
+    console.log(error.message)
+    return res.status(400).json({ message: error.message })
+  }
+}
+
 exports.getPublicChats = getPublicChats
 exports.addToGroupChatList = addToGroupChatList
 exports.getGroupChatList = getGroupChatList
+exports.getGroupChat = getGroupChat

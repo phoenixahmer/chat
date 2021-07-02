@@ -3,11 +3,16 @@ import {
   GROUP_LIST_SUCCESS,
   GROUP_LIST_ERROR,
 
+  ADD_GROUP_ENABLED,
   ADD_GROUP_REQUEST,
   ADD_GROUP_SUCCESS,
   ADD_GROUP_ERROR,
 
   SET_ACTIVE_GROUP,
+
+  GET_GROUP_MESSAGES_REQUEST,
+  GET_GROUP_MESSAGES_SUCCESS,
+  GET_GROUP_MESSAGES_ERROR,
 
   SEND_GROUP_MESSAGES_REQUEST,
   SEND_GROUP_MESSAGES_SUCCESS,
@@ -19,14 +24,18 @@ const initialState = {
   groupList: [],
   groupListError: false,
 
+  addGroupEnabled: false,
   addGrouploading: false,
   groupAdded: false,
   addGroupError: false,
 
   activeGroup: "",
 
-  sendGroupMessagesloading: false,
+  groupMessagesloading: true,
   groupMessages: [],
+  getGroupMessagesError: "",
+
+  sendGroupMessagesloading: false,
   sendGroupMessagesError: false,
 }
 
@@ -47,7 +56,12 @@ export const groupChatReducer = (state = initialState, action) => {
       groupListloading: false,
       groupListError: action.payload
     }
+
     // adding group
+    case ADD_GROUP_ENABLED: return {
+      ...state,
+      addGroupEnabled: action.payload,
+    }
     case ADD_GROUP_REQUEST: return {
       ...state,
       addGrouploading: true,
@@ -70,6 +84,22 @@ export const groupChatReducer = (state = initialState, action) => {
     }
 
     // getting group messages
+    case GET_GROUP_MESSAGES_REQUEST: return {
+      ...state,
+      groupMessagesloading: true,
+    }
+    case GET_GROUP_MESSAGES_SUCCESS: return {
+      ...state,
+      groupMessagesloading: false,
+      groupMessages: action.payload
+    }
+    case GET_GROUP_MESSAGES_ERROR: return {
+      ...state,
+      groupMessagesloading: false,
+      getGroupMessagesError: action.payload
+    }
+
+    // sending group messages
     case SEND_GROUP_MESSAGES_REQUEST: return {
       ...state,
       sendGroupMessagesloading: true,
@@ -77,7 +107,6 @@ export const groupChatReducer = (state = initialState, action) => {
     case SEND_GROUP_MESSAGES_SUCCESS: return {
       ...state,
       sendGroupMessagesloading: false,
-      groupMessages: action.payload,
     }
     case SEND_GROUP_MESSAGES_ERROR: return {
       ...state,
