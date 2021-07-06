@@ -4,7 +4,6 @@ import { sendGroupMessages } from "../../redux"
 
 export default function GroupChatPanel() {
 
-  const chat = useSelector(state => state.chat)
   const groupChat = useSelector(state => state.groupChat)
   const user = useSelector(state => state.user.user)
   const dispatch = useDispatch()
@@ -17,20 +16,21 @@ export default function GroupChatPanel() {
       setMessage("")
     }
   }
-
   return (
     groupChat.activeGroup
       ?
       <div>
         <h5>Group chat panel</h5>
-        {chat.loading
+        {groupChat.groupMessagesloading
           ? "....."
-          : chat.chat.map && chat.chat.map(
+          : groupChat.groupMessages[groupChat.activeGroup].map(
+            // console.log("attach user id to identify sneder")
             (v, i) => <p key={i} className={v.from === user._id
               ? "text-start"
               : "text-end"}>
-              {v.message}</p>
-          )}
+              {v}</p>
+          )
+        }
 
         < div className="form-group">
           <input

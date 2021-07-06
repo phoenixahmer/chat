@@ -40,10 +40,17 @@ const addToGroupChatList = async (req, res) => {
     return res.status(400).json({ message: error.message })
   }
 }
-
 const getGroupChatList = async (req, res) => {
   try {
+    console.log()
+
     let groupChatList = await GroupChatList.find()
+
+    groupChatList = groupChatList.filter(group => {
+      const isMember = group.members.map(member => member.id == req.user.id)
+
+      if (isMember[0]) return group
+    })
 
     if (!groupChatList) {
       console.log({ message: "group not found" })
@@ -59,14 +66,11 @@ const getGroupChatList = async (req, res) => {
 
 const getGroupChat = async (req, res) => {
   try {
-    const { groupId } = req.body
-    console.log("req.body ", req)
-    console.log("req.header ", req.header)
+    const { groupId } = req.query
     let groupChatMessages = await GroupChatMessages.find({ groupId })
 
-    console.log(groupChatMessages)
     if (!groupChatMessages) {
-      console.log({ message: "getGroupChat no groupChatMessages " })
+      console.log({ message: "group not found" })
       return res.status(406).json({ message: "group not found" })
     }
 

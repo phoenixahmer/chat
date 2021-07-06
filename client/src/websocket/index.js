@@ -1,3 +1,11 @@
-import { w3cwebsocket as W3CWebSocket } from "websocket"
-export const client = new W3CWebSocket('ws://127.0.0.1:8080/chat')
-export const GroupClient = new W3CWebSocket('ws://127.0.0.1:8080/groupChat')
+import { io } from "socket.io-client";
+
+export const client =
+  io("http://localhost:8080/", {
+    transports: ['websocket', 'polling', 'flashsocket'],
+    auth: { token: localStorage.token+1 }
+  });
+  
+
+console.log(localStorage.token)
+export const GroupClient = ""

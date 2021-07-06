@@ -43,7 +43,7 @@ export const groupListError = (error) => {
 
 export const getGroupChatList = () => {
   return async (dispatch) => {
-    dispatch(groupListRequest)
+    dispatch(groupListRequest())
 
     const headers = {
       'Content-Type': 'application/json;charset=UTF-8',
@@ -120,10 +120,10 @@ export const groupMessagesRequest = () => {
     type: GET_GROUP_MESSAGES_REQUEST
   }
 }
-export const groupMessagesSuccess = (messages) => {
+export const groupMessagesSuccess = (groupId, messages) => {
   return {
     type: GET_GROUP_MESSAGES_SUCCESS,
-    payload: messages
+    payload: { groupId, messages }
   }
 }
 export const groupMessagesError = (error) => {
@@ -135,21 +135,20 @@ export const groupMessagesError = (error) => {
 
 export const getGroupMessages = (groupId) => {
   return async (dispatch) => {
-    dispatch(groupMessagesRequest)
+    dispatch(groupMessagesRequest())
     const headers = {
       'Content-Type': 'application/json;charset=UTF-8',
       "x-auth": localStorage.getItem("token")
     }
-    const body = { groupId }
-    console.log(groupId)
     try {
-      let res = await axios.get("http://localhost:8080/chat/groupChat", { headers }, body)
-      console.log(res)
-      dispatch(groupMessagesSuccess(res.data))
+      let res = await axios.get("http://localhost:8080/chat/groupChat?groupId=" + groupId, { headers })
+      const message = await res.data.map((item, index) => {
+        return item.message
+      })
+      dispatch(groupMessagesSuccess(groupId, message))
     } catch (error) {
       dispatch(groupMessagesError(error.response.data))
     }
-
   }
 }
 
@@ -174,7 +173,6 @@ export const sendGroupMessagesError = (error) => {
 export const sendGroupMessages = (groupId, message) => {
   return async (dispatch) => {
     dispatch(sendGroupMessagesRequest())
-
     try {
       GroupClient.send(JSON.stringify({
         groupId,
@@ -185,6 +183,5 @@ export const sendGroupMessages = (groupId, message) => {
     } catch (error) {
       dispatch(sendGroupMessagesError(error.response.data))
     }
-
   }
 }

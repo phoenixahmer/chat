@@ -31,7 +31,7 @@ const initialState = {
 
   activeGroup: "",
 
-  groupMessagesloading: true,
+  groupMessagesloading: false,
   groupMessages: [],
   getGroupMessagesError: "",
 
@@ -91,7 +91,10 @@ export const groupChatReducer = (state = initialState, action) => {
     case GET_GROUP_MESSAGES_SUCCESS: return {
       ...state,
       groupMessagesloading: false,
-      groupMessages: action.payload
+      groupMessages: {
+        ...state.groupMessages,
+        [action.payload.groupId]: action.payload.messages
+      }
     }
     case GET_GROUP_MESSAGES_ERROR: return {
       ...state,
